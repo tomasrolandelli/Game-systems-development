@@ -8,7 +8,7 @@ public class MenuFrame extends JFrame {
     MenuFrame() {
         panel = new MenuPanel();
         this.add(panel);
-        this.setTitle("Main Manu for Ping-Pong");
+        this.setTitle("Main Menu for Ping-Pong");
         this.setResizable(false);
 
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
