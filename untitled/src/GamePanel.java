@@ -14,6 +14,8 @@ public class GamePanel extends JPanel implements Runnable {
     static final int PADDLE_WIDTH = 25;
     static int PADDLE_HEIGHT = 80;
     static final Dimension SCREEN = new Dimension(1000, 500);
+    int peddleOneHeight;
+    int peddleTwoHeight;
     int hitCounter;
     Thread gameThread;
     Image image;
@@ -39,8 +41,11 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     public void newPeddle() {
-        this.paddle_1 = new Paddle(25, 250 - PADDLE_HEIGHT / 2, 25, PADDLE_HEIGHT, 1);
-        this.paddle_2 = new Paddle(950, 250 - PADDLE_HEIGHT / 2, 25, PADDLE_HEIGHT, 2);
+        this.peddleOneHeight = this.peddleHeightController(this.score.player_1);
+        this.peddleTwoHeight = this.peddleHeightController(this.score.player_2);
+        this.paddle_1 = new Paddle(25, 250 - this.peddleOneHeight / 2, 25, this.peddleOneHeight,1);
+        this.paddle_2 = new Paddle(950, 250 - this.peddleTwoHeight / 2, 25, this.peddleTwoHeight,2);
+
     }
 
     public void paint(Graphics g) {
@@ -62,6 +67,9 @@ public class GamePanel extends JPanel implements Runnable {
         this.paddle_2.move();
         this.ball.move();
     }
+    public int peddleHeightController(int score){
+        return PADDLE_HEIGHT + score * 10;
+    }
 
     public void checkCollision() {
         if (this.collisionChecker.didTouchTopOrBottomEdge(this.ball.y, 474)) {
@@ -82,13 +90,30 @@ public class GamePanel extends JPanel implements Runnable {
 
         if (this.collisionChecker.didTouchPaddle(this.ball, new Rectangle(this.paddle_1.x, this.paddle_1.y1, this.paddle_1.width, this.paddle_1.height))) {
             this.ball.xVelocity = Math.abs(this.ball.xVelocity);
+            if (this.hitCounter < 30) {
+                ++this.ball.xVelocity;
+                if (this.ball.yVelocity > 0 ) {
+                    ++this.ball.yVelocity;
+                } else {
+                    --this.ball.yVelocity;
+                }
+            }
             this.ball.setXDirection(this.ball.xVelocity);
             this.ball.setYDirection(this.ball.yVelocity);
             ++this.hitCounter;
         }
 
+
         if (this.collisionChecker.didTouchPaddle(this.ball, new Rectangle(this.paddle_2.x, this.paddle_2.y2, this.paddle_2.width, this.paddle_2.height))) {
             this.ball.xVelocity = Math.abs(this.ball.xVelocity);
+            if (this.hitCounter < 30) {
+                ++this.ball.xVelocity;
+                if (this.ball.yVelocity > 0 ) {
+                    ++this.ball.yVelocity;
+                } else {
+                    --this.ball.yVelocity;
+                }
+            }
             this.ball.setXDirection(-this.ball.xVelocity);
             this.ball.setYDirection(this.ball.yVelocity);
             ++this.hitCounter;
@@ -98,17 +123,19 @@ public class GamePanel extends JPanel implements Runnable {
             this.paddle_1.y1 = 0;
         }
 
-        if (this.paddle_1.y1 >= 500 - PADDLE_HEIGHT) {
-            this.paddle_1.y1 = 500 - PADDLE_HEIGHT;
+        if (this.paddle_1.y1 >= 500 - this.peddleOneHeight) {
+            this.paddle_1.y1 = 500 - this.peddleOneHeight;
         }
 
         if (this.paddle_2.y2 <= 0) {
             this.paddle_2.y2 = 0;
         }
 
-        if (this.paddle_2.y2 >= 500 - PADDLE_HEIGHT) {
-            this.paddle_2.y2 = 500 - PADDLE_HEIGHT;
+        if (this.paddle_2.y2 >= 500 - this.peddleTwoHeight) {
+            this.paddle_2.y2 = 500 - this.peddleTwoHeight;
         }
+        this.peddleOneHeight = this.peddleHeightController(this.score.player_1);
+        this.peddleTwoHeight = this.peddleHeightController(this.score.player_2);
 
         if (this.collisionChecker.didTouchLeftGoalPost(this.ball.x, this.ball.y, 500)) {
             ++this.score.player_2;
